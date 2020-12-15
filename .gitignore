@@ -1,0 +1,17 @@
+# Python
+.venv/
+.tox/
+*.pyc
+__pycache__/
+.mypy_cache/
+*.egg-info/
+.coverage
+
+# Build folder
+dist/
+
+# Editor
+.vscode/
+
+# Reporting
+report/

@@ -1,0 +1,88 @@
+version: 2.1
+
+parameters:
+  latest-python-version:
+    type: string
+    default: "3.9"
+
+commands:
+  setup-poetry:
+    steps:
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "poetry.lock" }}
+      - run:
+          command: poetry install
+      - save_cache:
+          key: deps-{{ checksum "poetry.lock" }}
+          paths:
+            - /home/circleci/.cache/pypoetry/virtualenvs
+  flake8:
+    steps:
+      - run:
+          command: |
+            poetry run flake8 --version
+      - run:
+          command: |
+            poetry run flake8 .
+  pytest:
+    steps:
+      - run:
+          command: |
+            poetry run pytest --cov-report term-missing --cov=combu tests/
+  test:
+    steps:
+      - flake8
+      - pytest
+
+  build:
+    steps:
+      - run:
+          command: |
+            poetry build
+
+executors:
+  python:
+    parameters:
+        tag:
+          type: string
+          default: << pipeline.parameters.latest-python-version >>
+    docker:
+      - image: circleci/python:<< parameters.tag >>
+
+jobs:
+  test:
+    parameters:
+      python_version:
+        type: string
+        default: << pipeline.parameters.latest-python-version >>
+    executor:
+          name: python
+          tag: << parameters.python_version >>
+    steps:
+      - checkout
+      - setup-poetry
+      - test
+  build:
+    parameters:
+      python_version:
+        type: string
+        default: << pipeline.parameters.latest-python-version >>
+    executor:
+          name: python
+          tag: << parameters.python_version >>
+    steps:
+      - checkout
+      - setup-poetry
+      - build
+
+workflows:
+  test-all:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              python_version: ["3.6", "3.7", "3.8", "3.9"]
+  build:
+    jobs:
+      - build
