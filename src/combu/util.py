@@ -1,29 +1,31 @@
 """Utility."""
 
 import random
-from typing import Any, cast, Dict, List
+from typing import cast, List
+
+from combu.definition import TParams, TParamsKey
 
 
-def get_order(keys: List[str], order: List[str] = None) -> List[str]:
+def get_order(keys: TParamsKey, order: List[str] = None) -> List[str]:
     """Get order.
 
     Args:
-        keys (List[str]): Keys.
+        keys (TParamsKey): Keys.
         order (List[str], optional): Key order.
 
     Returns:
-        List[str]: [description]
+        List[str]: Keys order.
     """
     order = [] if order is None else order
     order += [k for k in keys if k not in order]
     return order
 
 
-def count(params: Dict[str, List[Any]]) -> int:
+def count(params: TParams) -> int:
     """Count combinations.
 
     Args:
-        params (Dict[str, List[Any]]): Parameters.
+        params (TParams): Parameters.
 
     Returns:
         int: Result.
@@ -36,7 +38,7 @@ def count(params: Dict[str, List[Any]]) -> int:
     return result
 
 
-def shuffle_params(params: Dict[str, List[Any]],
+def shuffle_params(params: TParams,
                    seed: int = None,
                    no_seed: bool = False) -> None:
     """Shuffle parameters.
