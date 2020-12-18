@@ -1,7 +1,7 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, cast, Dict, Iterator, List
+from typing import Any, Callable, cast, Dict, Iterator, List, Tuple
 
 import combu
 from combu.definition import TParams, TParamsKey, Unset
@@ -15,14 +15,14 @@ def _create_comb_index(
     """Create parameter index.
 
     Args:
-        params (TParams): Parameters.
+        params (Dict[TParamsKey, List]): Parameters.
         order (List[TParamsKey], optional): Loop order.
 
     Raises:
         KeyError: Used unknown key on 'order'.
 
     Yields:
-        Iterator[List[int]]: Index of parameter.
+        Iterator[Dict[TParamsKey, int]]: Index of parameter.
     """
     keys = combu.util.get_order(params.keys(), order=order)  # type: ignore
     idx_list = []
@@ -129,9 +129,11 @@ class Combu:
         """
         self.after_each[k] = func
 
-    def execute(self,
-                params: TParams,
-                order: List[TParamsKey] = None) -> Iterator[Any]:
+    def execute(
+        self,
+        params: TParams,
+        order: List[TParamsKey] = None,
+    ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
         """Execute the function.
 
         Args:
@@ -142,7 +144,7 @@ class Combu:
             KeyError: Unknown key.
 
         Yields:
-            Iterator[Any]: Result.
+            Iterator[Tuple[Any, Dict[str, Any]]]: Result.
         """
         if order is None:
             order = self.order
