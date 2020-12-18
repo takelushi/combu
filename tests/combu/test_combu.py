@@ -160,6 +160,46 @@ class TestCombu:
         ]
         assert actual == expected_list
 
+    def test_execute_unpack(self) -> None:
+        """Test execute().
+
+        Unpack.
+        """
+
+        def func(v1: str, v2: int, v3: int) -> Tuple[str, int, int]:
+            return v1, v2, v3
+
+        comb = Combu(func)
+
+        params = {
+            'v1': ['a', 'b'],
+            ('v2', 'v3'): [(0, 0), (1, 1)],
+        }
+        actual = [res for res in comb.execute(params)]  # noqa: C416
+        expected_list = [
+            (('a', 0, 0), {
+                'v1': 'a',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('a', 1, 1), {
+                'v1': 'a',
+                'v2': 1,
+                'v3': 1,
+            }),
+            (('b', 0, 0), {
+                'v1': 'b',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('b', 1, 1), {
+                'v1': 'b',
+                'v2': 1,
+                'v3': 1,
+            }),
+        ]
+        assert actual == expected_list
+
     def test_execute_loop_hooks(self) -> None:
         """Test execute().
 

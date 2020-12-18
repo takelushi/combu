@@ -151,7 +151,7 @@ poetry install
 
 # Lint & Test
 mkdir report
-poetry run flake8 --format=html --htmldir=report/flake-report .
+poetry run flake8 --format=html --htmldir=report/flake-report src/ tests/
 poetry run pytest --cov-report term-missing --cov=combu tests/
 poetry run pytest --cov-report html:report/coverage --cov=combu tests/
 

@@ -3,6 +3,7 @@
 from typing import Any, Callable, cast, Dict, Iterator, List
 
 import combu
+from combu.definition import TParams, TParamsKey
 
 
 class Combu:
@@ -87,7 +88,7 @@ class Combu:
         self.after_each[k] = func
 
     def execute(self,
-                params: Dict[str, List[Any]],
+                params: TParams,
                 order: List[str] = None) -> Iterator[Any]:
         """Execute the function.
 
@@ -101,14 +102,15 @@ class Combu:
         Yields:
             Iterator[Any]: Result.
         """
-        params_keys = cast(List[str], params.keys())
+        params_keys = cast(TParamsKey, params.keys())
         order = combu.util.get_order(params_keys, order=order)
         before_idx = {k: -1 for k in params.keys()}
         last_param_idx = {k: len(v) - 1 for k, v in params.items()}
 
         # raise KeyError
         for comb_idx in combu.create_index(params, order=order):
-            comb = {k: params[k][i] for k, i in comb_idx.items()}
+
+            comb = combu._resolve_params(params, comb_idx)
 
             # Before loop
             for k in self.before.keys():
