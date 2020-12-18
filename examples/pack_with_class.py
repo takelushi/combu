@@ -18,7 +18,7 @@ params = {
             'v1': ['x', 'y'],
             'v2': ['X', 'Y'],
         },
-    ]
+    ],
 }
 for res, param in combu.execute(_f, params):
     print(res, param)
