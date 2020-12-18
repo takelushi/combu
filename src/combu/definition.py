@@ -14,7 +14,6 @@ class Pack():
 
     def __init__(self, *keys: List[str]) -> None:
         """Initialize object."""
-        # TODO: Order.
         self.keys = list(keys)
 
 

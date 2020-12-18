@@ -16,7 +16,7 @@ def get_order(keys: List[TParamsKey],
         order (List[TParamsKey], optional): Key order.
 
     Returns:
-        List[str]: Keys order.
+        List[TParamsKey]: Keys order.
     """
     order = [] if order is None else order
     order += [k for k in keys if k not in order]
@@ -40,7 +40,8 @@ def _unpack_pack(pack: Pack, params_list: List[TParams]):
     for k in pack.keys:
         assert isinstance(k, str)
     for params in params_list:
-        vals = combu.create_values(params, order=pack.keys)
+        keys = cast(List[TParamsKey], pack.keys)
+        vals = combu.create_values(params, order=keys)
         result += [v for v in vals]  # noqa: C416
 
     return result
