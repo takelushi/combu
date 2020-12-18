@@ -3,6 +3,7 @@
 from typing import Tuple
 
 from combu.combu import Combu
+from combu.definition import Pack, Unset
 
 
 class TestCombu:
@@ -156,6 +157,184 @@ class TestCombu:
             ((2, 'b'), {
                 'v1': 2,
                 'v2': 'b',
+            }),
+        ]
+        assert actual == expected_list
+
+    def test_execute_unset(self) -> None:
+        """Test execute().
+
+        Use Unset.
+        """
+
+        def func(v1: int, v2: str = 'default') -> Tuple[int, str]:
+            return v1, v2
+
+        comb = Combu(func)
+        params = {
+            'v1': [1, 2],
+            'v2': ['a', Unset()],
+        }
+        actual = [res for res in comb.execute(params)]  # noqa: C416
+        expected_list = [
+            ((1, 'a'), {
+                'v1': 1,
+                'v2': 'a',
+            }),
+            ((1, 'default'), {
+                'v1': 1,
+            }),
+            ((2, 'a'), {
+                'v1': 2,
+                'v2': 'a',
+            }),
+            ((2, 'default'), {
+                'v1': 2,
+            }),
+        ]
+        assert actual == expected_list
+
+    def test_execute_unpack_tuple(self) -> None:
+        """Test execute().
+
+        Unpack.
+        """
+
+        def func(v1: str, v2: int, v3: int) -> Tuple[str, int, int]:
+            return v1, v2, v3
+
+        comb = Combu(func)
+
+        params = {
+            'v1': ['a', 'b'],
+            ('v2', 'v3'): [(0, 0), (1, 1)],
+        }
+        actual = [res for res in comb.execute(params)]  # noqa: C416
+        expected_list = [
+            (('a', 0, 0), {
+                'v1': 'a',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('a', 1, 1), {
+                'v1': 'a',
+                'v2': 1,
+                'v3': 1,
+            }),
+            (('b', 0, 0), {
+                'v1': 'b',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('b', 1, 1), {
+                'v1': 'b',
+                'v2': 1,
+                'v3': 1,
+            }),
+        ]
+        assert actual == expected_list
+
+    def test_execute_unpack_pack(self) -> None:
+        """Test execute().
+
+        Unpack pack.
+        """
+
+        def func(v1: str, v2: int, v3: int) -> Tuple[str, int, int]:
+            return v1, v2, v3
+
+        comb = Combu(func)
+        params = {
+            'v1': ['a', 'b'],
+            Pack('v2', 'v3'): [{
+                'v2': [0, 1],
+                'v3': [0, 1],
+            }, {
+                'v2': [2, 3],
+                'v3': [2, 3],
+            }],
+        }
+        actual = [res for res in comb.execute(params)]  # noqa: C416
+        expected_list = [
+            (('a', 0, 0), {
+                'v1': 'a',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('a', 0, 1), {
+                'v1': 'a',
+                'v2': 0,
+                'v3': 1,
+            }),
+            (('a', 1, 0), {
+                'v1': 'a',
+                'v2': 1,
+                'v3': 0,
+            }),
+            (('a', 1, 1), {
+                'v1': 'a',
+                'v2': 1,
+                'v3': 1,
+            }),
+            (('a', 2, 2), {
+                'v1': 'a',
+                'v2': 2,
+                'v3': 2,
+            }),
+            (('a', 2, 3), {
+                'v1': 'a',
+                'v2': 2,
+                'v3': 3,
+            }),
+            (('a', 3, 2), {
+                'v1': 'a',
+                'v2': 3,
+                'v3': 2,
+            }),
+            (('a', 3, 3), {
+                'v1': 'a',
+                'v2': 3,
+                'v3': 3,
+            }),
+            (('b', 0, 0), {
+                'v1': 'b',
+                'v2': 0,
+                'v3': 0,
+            }),
+            (('b', 0, 1), {
+                'v1': 'b',
+                'v2': 0,
+                'v3': 1,
+            }),
+            (('b', 1, 0), {
+                'v1': 'b',
+                'v2': 1,
+                'v3': 0,
+            }),
+            (('b', 1, 1), {
+                'v1': 'b',
+                'v2': 1,
+                'v3': 1,
+            }),
+            (('b', 2, 2), {
+                'v1': 'b',
+                'v2': 2,
+                'v3': 2,
+            }),
+            (('b', 2, 3), {
+                'v1': 'b',
+                'v2': 2,
+                'v3': 3,
+            }),
+            (('b', 3, 2), {
+                'v1': 'b',
+                'v2': 3,
+                'v3': 2,
+            }),
+            (('b', 3, 3), {
+                'v1': 'b',
+                'v2': 3,
+                'v3': 3,
             }),
         ]
         assert actual == expected_list

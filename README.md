@@ -20,11 +20,9 @@ Execute your method with combination parameters.
 pip install conbu
 ```
 
-## Tutorial
+## Usage
 
-### Simple usage
-
-#### One time loop
+### One time loop
 
 ```python
 import combu
@@ -59,7 +57,7 @@ bB {'v2': 'B', 'v1': 'b'}
 '''
 ```
 
-#### Reloopable by using class
+### Reloopable by using class
 
 ```python
 import combu
@@ -84,7 +82,7 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    print(res, param)
 ```
 
-#### Hooks
+### Hooks
 
 * Hooks flow
 
@@ -130,16 +128,18 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    comb.set_before('v1', before_v1)
    ```
 
-#### Utility
+### Utility
 
-* Create parameter index combination.
-   * `combu.create_index`
-* Create parameter combination (not execute any function).
-   * `combu.create_value`
+* Create parameter combination (not execute any functions).
+   * `combu.create_values`
 * Count combinations.
    * `combu.util.count`
 * Shuffle parameters.
    * `combu.util.shuffle_params`
+
+## Examples
+
+* Available on `./examples`.
 
 ## Development
 
@@ -151,7 +151,8 @@ poetry install
 
 # Lint & Test
 mkdir report
-poetry run flake8 --format=html --htmldir=report/flake-report .
+poetry run flake8 --format=html --htmldir=report/flake-report src/ tests/
+poetry run pytest --cov-report term-missing --cov=combu tests/
 poetry run pytest --cov-report html:report/coverage --cov=combu tests/
 
 # Build and publish
