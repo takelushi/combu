@@ -2,13 +2,22 @@
 
 from typing import Any, Dict, List, Tuple, Union
 
-TParamsKey = Union[str, Tuple[str, ...]]
-TParamsValue = Union[List[Any], List[Tuple[Any, ...]]]
-TParamsIndex = Dict[TParamsKey, int]
-TParams = Dict[TParamsKey, TParamsValue]
-
 
 class Unset():
     """Unset paramteter."""
 
     pass
+
+
+class Pack():
+    """Packed combination parameter."""
+
+    def __init__(self, *keys: List[str]) -> None:
+        """Initialize object."""
+        # TODO: Order.
+        self.keys = list(keys)
+
+
+TParamsKey = Union[str, Tuple[str, ...]]
+TParamsValue = Union[List[Any], List[Tuple[Any, ...]], Pack]
+TParams = Dict[TParamsKey, List[TParamsValue]]

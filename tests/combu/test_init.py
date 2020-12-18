@@ -4,7 +4,7 @@ from typing import Tuple
 
 import combu
 from combu.combu import Combu
-from combu.definition import Unset
+from combu.definition import Pack, Unset
 import pytest
 
 
@@ -16,6 +16,11 @@ def test_import_combu_class():
 def test_import_unset_class():
     """Test import Unset class."""
     assert combu.Unset == Unset
+
+
+def test_import_pack_class():
+    """Test import Pack class."""
+    assert combu.Pack == Pack
 
 
 @pytest.mark.skip(reason='Test on execute().')
@@ -131,10 +136,43 @@ def test_execute_order() -> None:
     assert actual == expected_list
 
 
-def test_execute_unpack() -> None:
+def test_execute_unset() -> None:
     """Test execute().
 
-    Unpack.
+    Use Unset.
+    """
+
+    def func(v1: int, v2: str = 'default') -> Tuple[int, str]:
+        return v1, v2
+
+    params = {
+        'v1': [1, 2],
+        'v2': ['a', Unset()],
+    }
+    actual = [res for res in combu.execute(func, params)]  # noqa: C416
+    expected_list = [
+        ((1, 'a'), {
+            'v1': 1,
+            'v2': 'a',
+        }),
+        ((1, 'default'), {
+            'v1': 1,
+        }),
+        ((2, 'a'), {
+            'v1': 2,
+            'v2': 'a',
+        }),
+        ((2, 'default'), {
+            'v1': 2,
+        }),
+    ]
+    assert actual == expected_list
+
+
+def test_execute_unpack_tuple() -> None:
+    """Test execute().
+
+    Unpack tuple.
     """
 
     def func(v1: str, v2: int, v3: int) -> Tuple[str, int, int]:
@@ -170,10 +208,10 @@ def test_execute_unpack() -> None:
     assert actual == expected_list
 
 
-def test_execute_unpack_wrong_key_type() -> None:
+def test_execute_unpack_tuple_wrong_key_type() -> None:
     """Test execute().
 
-    Wrong key type.
+    Wrong key type on unpack tuple.
     """
 
     def func(v1: int, v2: str) -> Tuple[int, str]:
@@ -181,9 +219,114 @@ def test_execute_unpack_wrong_key_type() -> None:
 
     params = {('v1', 123): [(1, 'a')]}
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in combu.execute(func, params):
             pass
+
+
+def test_execute_unpack_pack() -> None:
+    """Test execute().
+
+    Unpack pack.
+    """
+
+    def func(v1: str, v2: int, v3: int) -> Tuple[str, int, int]:
+        return v1, v2, v3
+
+    params = {
+        'v1': ['a', 'b'],
+        Pack('v2', 'v3'): [{
+            'v2': [0, 1],
+            'v3': [0, 1],
+        }, {
+            'v2': [2, 3],
+            'v3': [2, 3],
+        }],
+    }
+    actual = [res for res in combu.execute(func, params)]  # noqa: C416
+    expected_list = [
+        (('a', 0, 0), {
+            'v1': 'a',
+            'v2': 0,
+            'v3': 0,
+        }),
+        (('a', 0, 1), {
+            'v1': 'a',
+            'v2': 0,
+            'v3': 1,
+        }),
+        (('a', 1, 0), {
+            'v1': 'a',
+            'v2': 1,
+            'v3': 0,
+        }),
+        (('a', 1, 1), {
+            'v1': 'a',
+            'v2': 1,
+            'v3': 1,
+        }),
+        (('a', 2, 2), {
+            'v1': 'a',
+            'v2': 2,
+            'v3': 2,
+        }),
+        (('a', 2, 3), {
+            'v1': 'a',
+            'v2': 2,
+            'v3': 3,
+        }),
+        (('a', 3, 2), {
+            'v1': 'a',
+            'v2': 3,
+            'v3': 2,
+        }),
+        (('a', 3, 3), {
+            'v1': 'a',
+            'v2': 3,
+            'v3': 3,
+        }),
+        (('b', 0, 0), {
+            'v1': 'b',
+            'v2': 0,
+            'v3': 0,
+        }),
+        (('b', 0, 1), {
+            'v1': 'b',
+            'v2': 0,
+            'v3': 1,
+        }),
+        (('b', 1, 0), {
+            'v1': 'b',
+            'v2': 1,
+            'v3': 0,
+        }),
+        (('b', 1, 1), {
+            'v1': 'b',
+            'v2': 1,
+            'v3': 1,
+        }),
+        (('b', 2, 2), {
+            'v1': 'b',
+            'v2': 2,
+            'v3': 2,
+        }),
+        (('b', 2, 3), {
+            'v1': 'b',
+            'v2': 2,
+            'v3': 3,
+        }),
+        (('b', 3, 2), {
+            'v1': 'b',
+            'v2': 3,
+            'v3': 2,
+        }),
+        (('b', 3, 3), {
+            'v1': 'b',
+            'v2': 3,
+            'v3': 3,
+        }),
+    ]
+    assert actual == expected_list
 
 
 def test_execute_wrong_key_type() -> None:
@@ -200,6 +343,6 @@ def test_execute_wrong_key_type() -> None:
         123: ['a', 'b'],
     }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in combu.execute(func, params):
             pass
