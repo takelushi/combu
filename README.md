@@ -22,9 +22,7 @@ pip install conbu
 
 ## Tutorial
 
-### Simple usage
-
-#### One time loop
+### One time loop
 
 ```python
 import combu
@@ -59,7 +57,7 @@ bB {'v2': 'B', 'v1': 'b'}
 '''
 ```
 
-#### Reloopable by using class
+### Reloopable by using class
 
 ```python
 import combu
@@ -84,7 +82,65 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    print(res, param)
 ```
 
-#### Hooks
+### Packed arguments
+
+```python
+import combu
+
+def func(v1, v2, v3):
+   return v1 + v2 + v3
+
+
+# Use tuple.
+params = {
+   'v1': ['a', 'b'],
+   ('v1', 'v2'): [
+      ('A', 'X'),
+      ('B', 'Y'),
+   ],
+}
+for res, param in combu.execute(func, params):
+   print(res, param)
+
+# Output
+'''
+aAX {'v1': 'a', 'v2': 'A', 'v3': 'X'}
+aBY {'v1': 'a', 'v2': 'B', 'v3': 'Y'}
+bAX {'v1': 'b', 'v2': 'A', 'v3': 'X'}
+bBY {'v1': 'b', 'v2': 'B', 'v3': 'Y'}
+'''
+
+# Use Pack class.
+from combu import Park
+params = {
+   Pack('v1', 'v2'): [
+      {
+         'v1': ['a', 'b'],
+         'v2': ['A', 'B'],
+      },
+      {
+         'v1': ['x', 'y'],
+         'v2': ['X', 'Y'],
+      },
+   ]
+}
+for res, param in combu.execute(func, params):
+   print(res, param)
+
+# Output
+'''
+aA {'v1': 'a', 'v2': 'A'}
+aB {'v1': 'a', 'v2': 'B'}
+bA {'v1': 'b', 'v2': 'A'}
+bB {'v1': 'b', 'v2': 'B'}
+xX {'v1': 'x', 'v2': 'X'}
+xY {'v1': 'x', 'v2': 'Y'}
+yX {'v1': 'y', 'v2': 'X'}
+yY {'v1': 'y', 'v2': 'Y'}
+'''
+```
+
+### Hooks
 
 * Hooks flow
 
@@ -130,12 +186,10 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    comb.set_before('v1', before_v1)
    ```
 
-#### Utility
+### Utility
 
-* Create parameter index combination.
-   * `combu.create_index`
-* Create parameter combination (not execute any function).
-   * `combu.create_value`
+* Create parameter combination (not execute any functions).
+   * `combu.create_values`
 * Count combinations.
    * `combu.util.count`
 * Shuffle parameters.
@@ -151,7 +205,8 @@ poetry install
 
 # Lint & Test
 mkdir report
-poetry run flake8 --format=html --htmldir=report/flake-report .
+poetry run flake8 --format=html --htmldir=report/flake-report src/ tests/
+poetry run pytest --cov-report term-missing --cov=combu tests/
 poetry run pytest --cov-report html:report/coverage --cov=combu tests/
 
 # Build and publish
