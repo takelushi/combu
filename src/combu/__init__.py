@@ -1,7 +1,7 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, cast, Dict, Iterator, List
+from typing import Any, Callable, cast, Dict, Iterator, List, Tuple
 
 from combu.combu import Combu
 from combu.definition import TParams, TParamsIndex, TParamsKey, Unset
@@ -39,6 +39,30 @@ def create_index(params: TParams,
         yield {k: i for k, i in zip(keys, comb) if i >= 0}
 
 
+def _unpack_tuple(keys: Tuple[Any, ...], values: Tuple[Any,
+                                                       ...]) -> Dict[str, Any]:
+    """Unpack tuple.
+
+    Args:
+        keys (Tuple[Any, ...]): Keys.
+        values (Tuple[Any, ...]): Values.
+
+    Raises:
+        ValueError: Unknown key type.
+
+    Returns:
+        Dict[str, Any]: Parameter.
+    """
+    result: Dict[str, Any] = {}
+    assert len(keys) == len(values)
+    for k, v in zip(keys, values):
+        if not isinstance(k, str):
+            raise ValueError('Unknown key type.')
+        if not isinstance(v, Unset):
+            result[k] = v
+    return result
+
+
 def _resolve_params(params: TParams, param_idx: dict) -> Dict[str, Any]:
     """Resolve parameters.
 
@@ -58,13 +82,7 @@ def _resolve_params(params: TParams, param_idx: dict) -> Dict[str, Any]:
         if isinstance(k, str):
             result[k] = v
         elif isinstance(k, tuple):
-            assert isinstance(v, tuple)
-            assert len(k) == len(v)
-            for k_sub, v_sub in zip(k, v):
-                if not isinstance(k_sub, str):
-                    raise ValueError('Unknown key type.')
-                if not isinstance(v_sub, Unset):
-                    result[k_sub] = v_sub
+            result = {**result, **_unpack_tuple(k, v)}
         else:
             raise ValueError('Unknown key type.')
     return result
