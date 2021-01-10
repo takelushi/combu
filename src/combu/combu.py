@@ -1,7 +1,7 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, cast, Dict, Iterator, List, Tuple
+from typing import Any, Callable, cast, Dict, Iterable, Iterator, List, Tuple
 
 import combu
 from combu.definition import TParams, TParamsKey, Unset
@@ -9,14 +9,14 @@ import combu.util
 
 
 def _create_comb_index(
-    params: Dict[TParamsKey, List],
-    order: List[TParamsKey] = None,
-) -> Iterator[Dict[TParamsKey, int]]:
+    params: Dict[TParamsKey, Iterable],
+    order: Iterable[TParamsKey] = None,
+) -> Iterable[Dict[TParamsKey, int]]:
     """Create parameter index.
 
     Args:
-        params (Dict[TParamsKey, List]): Parameters.
-        order (List[TParamsKey], optional): Loop order.
+        params (Dict[TParamsKey, Iterable]): Parameters.
+        order (Iterable[TParamsKey], optional): Loop order.
 
     Raises:
         KeyError: Used unknown key on 'order'.
@@ -28,14 +28,14 @@ def _create_comb_index(
     idx_list = []
     for k in keys:
         # raise KeyError
-        param = params[k]
+        param = [v for v in params[k]]
         idx_list.append([i for i in range(len(param))])  # noqa: C416
 
     for comb in itertools.product(*idx_list):
         yield {k: i for k, i in zip(keys, comb) if i >= 0}
 
 
-def _merge_dict(*d_li) -> dict:
+def _merge_dict(*d_li: Iterable[dict]) -> dict:
     """Merge dict.
 
     Returns:
@@ -185,8 +185,8 @@ class Combu:
 
             # After loop
             for k in reversed(list(self.after.keys())):
-                if comb_idx[k] == last_param_idx[k]:
-                    if all(comb_idx[k] == last_param_idx[k] for k in keys):
-                        self.after[k](**param)
+                keys = order[order.index(k):]
+                if all(comb_idx[k] == last_param_idx[k] for k in keys):
+                    self.after[k](**param)
 
             before_idx = comb_idx
