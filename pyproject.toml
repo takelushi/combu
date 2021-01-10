@@ -32,6 +32,7 @@ pytest-cov = "^2.10.1"
 flake8-html = "^0.4.1"
 pybadges = "^2.2.1"
 coverage = "^5.3"
+isort = "^5.7.0"
 
 [tool.poetry.urls]
 issues = "https://github.com/takelushi/combu/issues"
@@ -40,3 +41,8 @@ issues = "https://github.com/takelushi/combu/issues"
 requires = ["poetry>=1.1"]
 build-backend = "poetry.masonry.api"
 
+[tool.isort]
+profile = "google"
+line_length = "79"
+force_single_line = false
+known_third_party = ["combu"]
