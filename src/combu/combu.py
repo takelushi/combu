@@ -82,7 +82,7 @@ class Combu:
         Args:
             func (Callable): Target function.
             order (Iterable[TParamsKey], optional): Loop order.
-            before (Dict[str, Callable], optional): Functions before loop.e.
+            before (Dict[str, Callable], optional): Functions before loop.
             after (Dict[str, Callable], optional): Functions after loop.
             before_each (Dict[str, Callable], optional):
                 Functions before each loops.
@@ -204,3 +204,54 @@ class Combu:
                     self.after[k](**param)
 
             before_idx = comb_idx
+
+
+class CombuParallel:
+    """Parallel combination parameter."""
+
+    def __init__(
+        self,
+        func: Callable,
+        order: Iterable = None,
+        n_jobs: int = -1,
+        progress: bool = False,
+    ) -> None:
+        """Initialize object.
+
+        Args:
+            func (Callable): Target function.
+            order (Iterable[TParamsKey], optional): Loop order
+            n_jobs (int, optional): Number of processes.
+                                    Default to -1 (all processes).
+            progress (bool, optional): Show progress bar or not.
+        """
+        self.func = func
+        self.order = [] if order is None else order
+        self.n_jobs = n_jobs
+        self.progress = progress
+
+    def execute(
+        self,
+        params: dict,
+        order: Iterable[TParamsKey] = None,
+    ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
+        """Execute the function.
+
+        Args:
+            params (TParams): Parameters.
+            order (Iterable[TParamsKey], optional): Loop order.
+
+        Raises:
+            KeyError: Unknown key.
+
+        Yields:
+            Iterator[Tuple[Any, Dict[str, Any]]]: Result.
+        """
+        if order is None:
+            order = self.order
+        for res, param in combu.execute(self.func,
+                                        params,
+                                        order=order,
+                                        n_jobs=self.n_jobs,
+                                        progress=self.progress):
+            yield res, param

@@ -3,11 +3,13 @@
 import itertools
 from typing import Any, Callable, cast, Dict, Iterable, Iterator, Tuple
 
-from combu.combu import Combu
+from combu.combu import Combu, CombuParallel
 from combu.definition import Pack, TParams, Unset
+from combu.parallel import ParallelExecutor
 import combu.util
 
 Combu = Combu
+CombuParallel = CombuParallel
 Pack = Pack
 Unset = Unset
 
@@ -36,6 +38,7 @@ def execute(
     func: Callable,
     params: dict,
     order: Iterable = None,
+    n_jobs: int = 1,
     progress: bool = False,
 ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
     """Execute the function with parameter combination.
@@ -44,6 +47,7 @@ def execute(
         func (Callable): Target function.
         params (TParams): Parameters.
         order (Iterable[TParamsKey], optional): Loop order.
+        n_jobs (int, optional): Number of processes. Default to 1.
         progress (bool, optional): Show progress bar or not.
 
     Raises:
@@ -56,13 +60,20 @@ def execute(
     """
     params = cast(TParams, params)
 
-    val_ter = create_values(params, order=order)
-    if progress:
-        from tqdm.auto import tqdm
-        total = combu.util.count(params)
-        val_ter = tqdm(val_ter, total=total)
+    val_iter = create_values(params, order=order)
 
-    # raise KeyError
-    for comb in val_ter:
-        # raise TypeError
-        yield func(**comb), comb
+    if n_jobs == 1:
+        if progress:
+            from tqdm.auto import tqdm
+            total = combu.util.count(params)
+            val_iter = tqdm(val_iter, total=total)
+
+        # raise KeyError
+        for comb in val_iter:
+            # raise TypeError
+            yield func(**comb), comb
+    else:
+        n = None if n_jobs < 0 else n_jobs
+        parallel = ParallelExecutor(func, n=n, progress=progress)
+        for res, param in parallel.execute(val_iter):
+            yield res, param

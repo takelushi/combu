@@ -130,6 +130,19 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    comb.set_before('v1', before_v1)
    ```
 
+### Parallel
+
+```python
+# Use n_jobs parameter.
+for res, param in combu.execute(func, params, n_jobs=2):
+   print(res, param)
+
+
+# Use combu.CombuParallel and n_jobs.
+# n_jobs=-1 mean "use all cores."
+comb = combu.CombuParallel(func, n_jobs=-1)
+```
+
 ### Utility
 
 * Create parameter combination (not execute any functions).
