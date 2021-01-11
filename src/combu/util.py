@@ -1,30 +1,31 @@
 """Utility."""
 
 import random
-from typing import Any, cast, Dict, List, Tuple
+from typing import Any, cast, Dict, Iterable, List, Tuple
 
 import combu
 from combu.definition import Pack, TParams, TParamsKey, TParamsValue
+import combu.util
 
 
-def get_order(keys: List[TParamsKey],
-              order: List[TParamsKey] = None) -> List[TParamsKey]:
+def get_order(keys: Iterable[TParamsKey],
+              order: Iterable[TParamsKey] = None) -> List[TParamsKey]:
     """Get order.
 
     Args:
-        keys (List[TParamsKey]): Keys.
-        order (List[TParamsKey], optional): Key order.
+        keys (Iterable[TParamsKey]): Keys.
+        order (Iterable[TParamsKey], optional): Key order.
 
     Returns:
         List[TParamsKey]: Keys order.
     """
-    order = [] if order is None else order
+    order = [] if order is None else [k for k in order]  # noqa: C416
     order += [k for k in keys if k not in order]
     return order
 
 
 def _unpack_tuple(keys: Tuple[Any, ...],
-                  vals_l: List[Tuple[Any, ...]]) -> List[Dict[str, Any]]:
+                  vals_l: Iterable[Tuple[Any, ...]]) -> List[Dict[str, Any]]:
     result = []
     for k in keys:
         if not isinstance(k, str):
@@ -35,19 +36,19 @@ def _unpack_tuple(keys: Tuple[Any, ...],
     return result
 
 
-def _unpack_pack(pack: Pack, params_list: List[TParams]):
+def _unpack_pack(pack: Pack, params_iter: Iterable[TParams]):
     result = []
     for k in pack.keys:
         assert isinstance(k, str)
-    for params in params_list:
-        keys = cast(List[TParamsKey], pack.keys)
+    for params in params_iter:
+        keys = cast(Iterable[str], pack.keys)
         vals = combu.create_values(params, order=keys)
         result += [v for v in vals]  # noqa: C416
 
     return result
 
 
-def _unpack(k: TParamsKey, v: List[TParamsValue]) -> List[Dict[str, Any]]:
+def _unpack(k: TParamsKey, v: Iterable[TParamsValue]) -> List[Dict[str, Any]]:
     if isinstance(k, str):
         return [{k: sub_v} for sub_v in v]
     elif isinstance(k, tuple):
@@ -58,19 +59,19 @@ def _unpack(k: TParamsKey, v: List[TParamsValue]) -> List[Dict[str, Any]]:
         raise TypeError('Unknown key type.')
 
 
-def standardize(params: TParams,
-                order: List[TParamsKey] = None) -> List[List[Dict[str, Any]]]:
+def standardize(
+        params: TParams,
+        order: Iterable[TParamsKey] = None) -> List[List[Dict[str, Any]]]:
     """Standardize parameters.
 
     Args:
         params (TParams): Parameters.
-        order (List[TParamsKey], optional): Key order.
+        order (Iterable[TParamsKey], optional): Key order.
 
     Returns:
         List[List[Dict[str, Any]]]: Standardized parameters.
     """
-    params_keys = cast(List[TParamsKey], params.keys())
-    keys = combu.util.get_order(params_keys, order=order)
+    keys = combu.util.get_order(params.keys(), order=order)
 
     results = []
 
@@ -96,7 +97,7 @@ def count(params: TParams) -> int:
     return result
 
 
-def shuffle_params(params: Dict[str, List[Any]],
+def shuffle_params(params: Dict[str, Iterable[Any]],
                    seed: int = None,
                    no_seed: bool = False) -> None:
     """Shuffle parameters.
@@ -104,7 +105,7 @@ def shuffle_params(params: Dict[str, List[Any]],
     Set global seed: random.seed(seed_value)
 
     Args:
-        params (Dict[str, List[Any]]): Parameters.
+        params (Dict[str, Iterable[Any]]): Parameters.
         seed (int, optional): Seed value.
         no_seed (bool, optional): Do not use global seed or not.
     """
@@ -116,4 +117,5 @@ def shuffle_params(params: Dict[str, List[Any]],
         rand = cast(random.Random, random)
 
     for k in params.keys():
-        rand.shuffle(params[k])
+        vals = [v for v in params[k]]  # noqa: C416
+        rand.shuffle(vals)

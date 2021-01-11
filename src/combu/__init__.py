@@ -1,7 +1,7 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, Dict, Iterator, List, Tuple
+from typing import Any, Callable, Dict, Iterable, Iterator, Tuple
 
 from combu.combu import Combu
 from combu.definition import Pack, TParams, TParamsKey, Unset
@@ -12,13 +12,14 @@ Pack = Pack
 Unset = Unset
 
 
-def create_values(params: TParams,
-                  order: List[TParamsKey] = None) -> Iterator[Dict[str, Any]]:
+def create_values(
+        params: TParams,
+        order: Iterable[TParamsKey] = None) -> Iterator[Dict[str, Any]]:
     """Create values.
 
     Args:
         params (TParams): Parameters.
-        order (ParamsKey, optional): Key order.
+        order (Iterable[ParamsKey], optional): Key order.
 
     Yields:
         Iterator[Dict[str, Any]]: Parameter.
@@ -34,14 +35,14 @@ def create_values(params: TParams,
 def execute(
     func: Callable,
     params: TParams,
-    order: List[TParamsKey] = None,
+    order: Iterable[TParamsKey] = None,
 ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
     """Execute the function with parameter combination.
 
     Args:
         func (Callable): Target function.
         params (TParams): Parameters.
-        order (List[TParamsKey], optional): Loop order.
+        order (Iterable[TParamsKey], optional): Loop order.
 
     Raises:
         KeyError: Used unknown key on 'order'.

@@ -24,18 +24,18 @@ def _create_comb_index(
     Yields:
         Iterator[Dict[TParamsKey, int]]: Index of parameter.
     """
-    keys = combu.util.get_order(params.keys(), order=order)  # type: ignore
+    keys = combu.util.get_order(params.keys(), order=order)
     idx_list = []
     for k in keys:
         # raise KeyError
-        param = [v for v in params[k]]
+        param = [v for v in params[k]]  # noqa: C416
         idx_list.append([i for i in range(len(param))])  # noqa: C416
 
     for comb in itertools.product(*idx_list):
         yield {k: i for k, i in zip(keys, comb) if i >= 0}
 
 
-def _merge_dict(*d_li: Iterable[dict]) -> dict:
+def _merge_dict(*d_li: dict) -> dict:
     """Merge dict.
 
     Returns:
@@ -132,13 +132,13 @@ class Combu:
     def execute(
         self,
         params: TParams,
-        order: List[TParamsKey] = None,
+        order: Iterable[TParamsKey] = None,
     ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
         """Execute the function.
 
         Args:
             params (TParams): Parameters.
-            order (List[TParamsKey], optional): Loop order.
+            order (Iterable[TParamsKey], optional): Loop order.
 
         Raises:
             KeyError: Unknown key.
@@ -158,8 +158,8 @@ class Combu:
         before_idx = {k: -1 for k in order}
         last_param_idx = {k: len(combs[k]) - 1 for k in order}
 
-        for comb_idx in _create_comb_index(combs):
-            comb = [combs[k][i] for k, i in comb_idx.items()]  # type: ignore
+        for comb_idx in _create_comb_index(combs):  # type: ignore
+            comb = [combs[k][i] for k, i in comb_idx.items()]
             param = _merge_dict(*comb)
             param = {
                 k: v for k, v in param.items() if not isinstance(v, Unset)
