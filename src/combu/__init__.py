@@ -1,10 +1,10 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, Dict, Iterable, Iterator, Tuple
+from typing import Any, Callable, cast, Dict, Iterable, Iterator, Tuple
 
 from combu.combu import Combu
-from combu.definition import Pack, TParams, TParamsKey, Unset
+from combu.definition import Pack, TParams, Unset
 import combu.util
 
 Combu = Combu
@@ -12,9 +12,8 @@ Pack = Pack
 Unset = Unset
 
 
-def create_values(
-        params: TParams,
-        order: Iterable[TParamsKey] = None) -> Iterator[Dict[str, Any]]:
+def create_values(params: dict,
+                  order: Iterable = None) -> Iterator[Dict[str, Any]]:
     """Create values.
 
     Args:
@@ -24,6 +23,7 @@ def create_values(
     Yields:
         Iterator[Dict[str, Any]]: Parameter.
     """
+    params = cast(TParams, params)
     combs_list = combu.util.standardize(params, order=order)
     for combs in itertools.product(*combs_list):
         param: Dict[str, Any] = {}
@@ -34,8 +34,8 @@ def create_values(
 
 def execute(
     func: Callable,
-    params: TParams,
-    order: Iterable[TParamsKey] = None,
+    params: dict,
+    order: Iterable = None,
 ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
     """Execute the function with parameter combination.
 
@@ -52,6 +52,7 @@ def execute(
     Yields:
         Iterator[Tuple[Any, Dict[str, Any]]]: Result and parameter.
     """
+    params = cast(TParams, params)
     # raise KeyError
     for comb in create_values(params, order=order):
         # raise TypeError

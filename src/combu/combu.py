@@ -131,7 +131,7 @@ class Combu:
 
     def execute(
         self,
-        params: TParams,
+        params: dict,
         order: Iterable[TParamsKey] = None,
     ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
         """Execute the function.
@@ -146,6 +146,8 @@ class Combu:
         Yields:
             Iterator[Tuple[Any, Dict[str, Any]]]: Result.
         """
+        params = cast(TParams, params)
+
         if order is None:
             order = self.order
 

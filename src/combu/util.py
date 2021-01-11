@@ -80,7 +80,7 @@ def standardize(
     return results
 
 
-def count(params: TParams) -> int:
+def count(params: dict) -> int:
     """Count combinations.
 
     Args:
@@ -89,6 +89,7 @@ def count(params: TParams) -> int:
     Returns:
         int: Result.
     """
+    params = cast(TParams, params)
     if params == {}:
         return 0
     result = 1
@@ -97,7 +98,7 @@ def count(params: TParams) -> int:
     return result
 
 
-def shuffle_params(params: Dict[str, Iterable[Any]],
+def shuffle_params(params: dict,
                    seed: int = None,
                    no_seed: bool = False) -> None:
     """Shuffle parameters.
@@ -109,6 +110,8 @@ def shuffle_params(params: Dict[str, Iterable[Any]],
         seed (int, optional): Seed value.
         no_seed (bool, optional): Do not use global seed or not.
     """
+    params = cast(Dict[str, Iterable[Any]], params)
+
     if no_seed:
         rand = random.Random()
     elif seed is not None:
