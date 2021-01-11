@@ -119,3 +119,4 @@ def shuffle_params(params: Dict[str, Iterable[Any]],
     for k in params.keys():
         vals = [v for v in params[k]]  # noqa: C416
         rand.shuffle(vals)
+        params[k] = vals
