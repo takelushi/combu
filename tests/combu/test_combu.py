@@ -514,8 +514,6 @@ class TestCombu:
             ['after_each_v1', 1, 6, 9],
             ['after_v3', 1, 6, 9],
             ['after_v2', 1, 6, 9],
-            ['after_v3', 1, 6, 9],
-            ['after_v2', 1, 6, 9],
             ['before_v2', 2, 4, 7],
             ['before_v3', 2, 4, 7],
             ['before_each_v1', 2, 4, 7],
