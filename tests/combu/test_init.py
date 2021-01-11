@@ -346,3 +346,17 @@ def test_execute_wrong_key_type() -> None:
     with pytest.raises(TypeError):
         for _ in combu.execute(func, params):
             pass
+
+
+def test_execute_progress() -> None:
+    """Test execute().
+
+    Use progress bar.
+    """
+
+    def func(v1: int, v2: int) -> int:
+        return v1 * v2
+
+    params = {'v1': range(1, 101), 'v2': range(1, 101)}
+    for _ in combu.execute(func, params, progress=True):
+        pass

@@ -485,6 +485,7 @@ class TestCombu:
             ['func', 1, 4, 9],
             ['after_each_v3', 1, 4, 9],
             ['after_each_v2', 1, 4, 9],
+            ['after_v3', 1, 4, 9],
             ['before_v3', 1, 5, 7],
             ['before_each_v2', 1, 5, 7],
             ['before_each_v3', 1, 5, 7],
@@ -497,6 +498,7 @@ class TestCombu:
             ['func', 1, 5, 9],
             ['after_each_v3', 1, 5, 9],
             ['after_each_v2', 1, 5, 9],
+            ['after_v3', 1, 5, 9],
             ['before_v3', 1, 6, 7],
             ['before_each_v2', 1, 6, 7],
             ['before_each_v3', 1, 6, 7],
@@ -526,6 +528,7 @@ class TestCombu:
             ['func', 2, 4, 9],
             ['after_each_v3', 2, 4, 9],
             ['after_each_v2', 2, 4, 9],
+            ['after_v3', 2, 4, 9],
             ['before_v3', 2, 5, 7],
             ['before_each_v2', 2, 5, 7],
             ['before_each_v3', 2, 5, 7],
@@ -538,6 +541,7 @@ class TestCombu:
             ['func', 2, 5, 9],
             ['after_each_v3', 2, 5, 9],
             ['after_each_v2', 2, 5, 9],
+            ['after_v3', 2, 5, 9],
             ['before_v3', 2, 6, 7],
             ['before_each_v2', 2, 6, 7],
             ['before_each_v3', 2, 6, 7],
@@ -567,6 +571,7 @@ class TestCombu:
             ['func', 3, 4, 9],
             ['after_each_v3', 3, 4, 9],
             ['after_each_v2', 3, 4, 9],
+            ['after_v3', 3, 4, 9],
             ['before_v3', 3, 5, 7],
             ['before_each_v2', 3, 5, 7],
             ['before_each_v3', 3, 5, 7],
@@ -579,6 +584,7 @@ class TestCombu:
             ['func', 3, 5, 9],
             ['after_each_v3', 3, 5, 9],
             ['after_each_v2', 3, 5, 9],
+            ['after_v3', 3, 5, 9],
             ['before_v3', 3, 6, 7],
             ['before_each_v2', 3, 6, 7],
             ['before_each_v3', 3, 6, 7],
@@ -597,3 +603,16 @@ class TestCombu:
             ['after_v1', 3, 6, 9],
         ]
         assert result == expected
+
+    def test_execute_progress(self) -> None:
+        """Test execute().
+
+        Use progress bar
+        """
+
+        def func(v1: int, v2: int) -> int:
+            return v1 * v2
+
+        comb = Combu(func, progress=True)
+        params = {'v1': range(1, 101), 'v2': range(1, 101)}
+        [res for res in comb.execute(params)]  # noqa: C416

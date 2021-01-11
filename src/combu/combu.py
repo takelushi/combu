@@ -1,7 +1,7 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, cast, Dict, Iterator, List, Tuple
+from typing import Any, Callable, cast, Dict, Iterable, Iterator, List, Tuple
 
 import combu
 from combu.definition import TParams, TParamsKey, Unset
@@ -9,14 +9,14 @@ import combu.util
 
 
 def _create_comb_index(
-    params: Dict[TParamsKey, List],
-    order: List[TParamsKey] = None,
-) -> Iterator[Dict[TParamsKey, int]]:
+    params: Dict[TParamsKey, Iterable],
+    order: Iterable[TParamsKey] = None,
+) -> Iterable[Dict[TParamsKey, int]]:
     """Create parameter index.
 
     Args:
-        params (Dict[TParamsKey, List]): Parameters.
-        order (List[TParamsKey], optional): Loop order.
+        params (Dict[TParamsKey, Iterable]): Parameters.
+        order (Iterable[TParamsKey], optional): Loop order.
 
     Raises:
         KeyError: Used unknown key on 'order'.
@@ -24,18 +24,18 @@ def _create_comb_index(
     Yields:
         Iterator[Dict[TParamsKey, int]]: Index of parameter.
     """
-    keys = combu.util.get_order(params.keys(), order=order)  # type: ignore
+    keys = combu.util.get_order(params.keys(), order=order)
     idx_list = []
     for k in keys:
         # raise KeyError
-        param = params[k]
+        param = [v for v in params[k]]  # noqa: C416
         idx_list.append([i for i in range(len(param))])  # noqa: C416
 
     for comb in itertools.product(*idx_list):
         yield {k: i for k, i in zip(keys, comb) if i >= 0}
 
 
-def _merge_dict(*d_li) -> dict:
+def _merge_dict(*d_li: dict) -> dict:
     """Merge dict.
 
     Returns:
@@ -67,24 +67,28 @@ class Combu:
     after_a()
     """
 
-    def __init__(self,
-                 func: Callable,
-                 order: List[TParamsKey] = None,
-                 before: Dict[str, Callable] = None,
-                 after: Dict[str, Callable] = None,
-                 before_each: Dict[str, Callable] = None,
-                 after_each: Dict[str, Callable] = None) -> None:
+    def __init__(
+        self,
+        func: Callable,
+        order: Iterable = None,
+        before: Dict[str, Callable] = None,
+        after: Dict[str, Callable] = None,
+        before_each: Dict[str, Callable] = None,
+        after_each: Dict[str, Callable] = None,
+        progress: bool = False,
+    ) -> None:
         """Initialize object.
 
         Args:
             func (Callable): Target function.
-            order (List[TParamsKey], optional): Loop order.
+            order (Iterable[TParamsKey], optional): Loop order.
             before (Dict[str, Callable], optional): Functions before loop.e.
             after (Dict[str, Callable], optional): Functions after loop.
             before_each (Dict[str, Callable], optional):
                 Functions before each loops.
             after_each (Dict[str, Callable], optional):
                 Functions after each loops.
+            progress (bool, optional): Show progress bar or not.
         """
         self.func = func
         self.order = [] if order is None else order
@@ -92,6 +96,7 @@ class Combu:
         self.after = {} if after is None else after
         self.before_each = {} if before_each is None else before_each
         self.after_each = {} if after_each is None else after_each
+        self.progress = progress
 
     def set_before(self, k: str, func: Callable) -> None:
         """Set before function.
@@ -131,14 +136,14 @@ class Combu:
 
     def execute(
         self,
-        params: TParams,
-        order: List[TParamsKey] = None,
+        params: dict,
+        order: Iterable[TParamsKey] = None,
     ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
         """Execute the function.
 
         Args:
             params (TParams): Parameters.
-            order (List[TParamsKey], optional): Loop order.
+            order (Iterable[TParamsKey], optional): Loop order.
 
         Raises:
             KeyError: Unknown key.
@@ -146,6 +151,8 @@ class Combu:
         Yields:
             Iterator[Tuple[Any, Dict[str, Any]]]: Result.
         """
+        params = cast(TParams, params)
+
         if order is None:
             order = self.order
 
@@ -158,8 +165,15 @@ class Combu:
         before_idx = {k: -1 for k in order}
         last_param_idx = {k: len(combs[k]) - 1 for k in order}
 
-        for comb_idx in _create_comb_index(combs):
-            comb = [combs[k][i] for k, i in comb_idx.items()]  # type: ignore
+        comb_idx_iter = _create_comb_index(combs)  # type: ignore
+
+        if self.progress:
+            from tqdm.auto import tqdm
+            total = combu.util.count(combs)
+            comb_idx_iter = tqdm(comb_idx_iter, total=total)
+
+        for comb_idx in comb_idx_iter:
+            comb = [combs[k][i] for k, i in comb_idx.items()]
             param = _merge_dict(*comb)
             param = {
                 k: v for k, v in param.items() if not isinstance(v, Unset)
@@ -185,8 +199,8 @@ class Combu:
 
             # After loop
             for k in reversed(list(self.after.keys())):
-                if comb_idx[k] == last_param_idx[k]:
-                    if all(comb_idx[k] == last_param_idx[k] for k in keys):
-                        self.after[k](**param)
+                keys = order[order.index(k):]
+                if all(comb_idx[k] == last_param_idx[k] for k in keys):
+                    self.after[k](**param)
 
             before_idx = comb_idx

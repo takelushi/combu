@@ -39,10 +39,7 @@ def test_shuffle_params() -> None:
     """Test shuffle_params()."""
     a = list(range(100))
     b = list(range(100, 0, -1))
-    params = {
-        'a': [v for v in a],  # noqa: C416
-        'b': [v for v in b],  # noqa: C416
-    }
+    params = {'a': a, 'b': b}
     util.shuffle_params(params)
 
     assert params['a'] != a

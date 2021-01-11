@@ -1,10 +1,10 @@
 """Combu."""
 
 import itertools
-from typing import Any, Callable, Dict, Iterator, List, Tuple
+from typing import Any, Callable, cast, Dict, Iterable, Iterator, Tuple
 
 from combu.combu import Combu
-from combu.definition import Pack, TParams, TParamsKey, Unset
+from combu.definition import Pack, TParams, Unset
 import combu.util
 
 Combu = Combu
@@ -12,17 +12,18 @@ Pack = Pack
 Unset = Unset
 
 
-def create_values(params: TParams,
-                  order: List[TParamsKey] = None) -> Iterator[Dict[str, Any]]:
+def create_values(params: dict,
+                  order: Iterable = None) -> Iterator[Dict[str, Any]]:
     """Create values.
 
     Args:
         params (TParams): Parameters.
-        order (ParamsKey, optional): Key order.
+        order (Iterable[ParamsKey], optional): Key order.
 
     Yields:
         Iterator[Dict[str, Any]]: Parameter.
     """
+    params = cast(TParams, params)
     combs_list = combu.util.standardize(params, order=order)
     for combs in itertools.product(*combs_list):
         param: Dict[str, Any] = {}
@@ -33,15 +34,17 @@ def create_values(params: TParams,
 
 def execute(
     func: Callable,
-    params: TParams,
-    order: List[TParamsKey] = None,
+    params: dict,
+    order: Iterable = None,
+    progress: bool = False,
 ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
     """Execute the function with parameter combination.
 
     Args:
         func (Callable): Target function.
         params (TParams): Parameters.
-        order (List[TParamsKey], optional): Loop order.
+        order (Iterable[TParamsKey], optional): Loop order.
+        progress (bool, optional): Show progress bar or not.
 
     Raises:
         KeyError: Used unknown key on 'order'.
@@ -51,7 +54,15 @@ def execute(
     Yields:
         Iterator[Tuple[Any, Dict[str, Any]]]: Result and parameter.
     """
+    params = cast(TParams, params)
+
+    val_ter = create_values(params, order=order)
+    if progress:
+        from tqdm.auto import tqdm
+        total = combu.util.count(params)
+        val_ter = tqdm(val_ter, total=total)
+
     # raise KeyError
-    for comb in create_values(params, order=order):
+    for comb in val_ter:
         # raise TypeError
         yield func(**comb), comb
