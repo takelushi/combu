@@ -132,7 +132,7 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
 
 ### Parallel
 
-```py
+```python
 # Use n_jobs parameter.
 for res, param in combu.execute(func, params, n_jobs=2):
    print(res, param)
