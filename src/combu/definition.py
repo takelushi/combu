@@ -1,6 +1,6 @@
 """Definition."""
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Iterable, Tuple, Union
 
 
 class Unset():
@@ -12,11 +12,11 @@ class Unset():
 class Pack():
     """Packed combination parameter."""
 
-    def __init__(self, *keys: List[str]) -> None:
+    def __init__(self, *keys: str) -> None:
         """Initialize object."""
-        self.keys = list(keys)
+        self.keys = [k for k in keys]  # noqa: C416
 
 
 TParamsKey = Union[str, Tuple[str, ...]]
-TParamsValue = Union[List[Any], List[Tuple[Any, ...]], Pack]
-TParams = Dict[TParamsKey, List[TParamsValue]]
+TParamsValue = Union[Iterable[Any], Iterable[Tuple[Any, ...]], Pack]
+TParams = Dict[TParamsKey, Iterable[TParamsValue]]

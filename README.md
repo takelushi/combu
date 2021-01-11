@@ -68,6 +68,8 @@ def func(v1, v2):
 comb = combu.Combu(func)
 # You can set order on initializer.
 # comb = combu.Combu(func, order=['v2', 'v1'])
+# If you want to show progress bar.
+# comb = combu.Combu(func, progress=True)
 
 params = {'v1': ['a', 'b'], 'v2': ['A', 'B']}
 for res, param in comb.execute(params):
@@ -127,6 +129,19 @@ for res, param in comb.execute(params, order=['v2', 'v1']):
    # * set_after_each(k, func)
    comb.set_before('v1', before_v1)
    ```
+
+### Parallel
+
+```python
+# Use n_jobs parameter.
+for res, param in combu.execute(func, params, n_jobs=2):
+   print(res, param)
+
+
+# Use combu.CombuParallel and n_jobs.
+# n_jobs=-1 mean "use all cores."
+comb = combu.CombuParallel(func, n_jobs=-1)
+```
 
 ### Utility
 
