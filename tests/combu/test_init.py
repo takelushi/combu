@@ -1,5 +1,6 @@
 """Test __init__.py."""
 
+import time
 from typing import Tuple
 
 import combu
@@ -360,3 +361,24 @@ def test_execute_progress() -> None:
     params = {'v1': range(1, 101), 'v2': range(1, 101)}
     for _ in combu.execute(func, params, progress=True):
         pass
+
+
+def _wait(v):
+    time.sleep(v)
+    return v
+
+
+def test_execute_parallel() -> None:
+    """Test execute().
+
+    Parallel.
+    """
+    t = 0.1
+    n_combs = 10
+    params = {'v': [t] * n_combs}
+    start_time = time.monotonic()
+    results = [res for res, _ in combu.execute(_wait, params, n_jobs=2)]
+    total_time = time.monotonic() - start_time
+
+    assert results == [t] * n_combs
+    assert total_time < t * n_combs

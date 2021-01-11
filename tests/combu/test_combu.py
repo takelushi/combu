@@ -1,8 +1,9 @@
 """Test combu."""
 
+import time
 from typing import Tuple
 
-from combu.combu import Combu
+from combu.combu import Combu, CombuParallel
 from combu.definition import Pack, Unset
 
 
@@ -616,3 +617,37 @@ class TestCombu:
         comb = Combu(func, progress=True)
         params = {'v1': range(1, 101), 'v2': range(1, 101)}
         [res for res in comb.execute(params)]  # noqa: C416
+
+
+def _wait(v):
+    time.sleep(v)
+    return v
+
+
+class TestCombuParallel:
+    """Test CombuParallel."""
+
+    def test_init(self) -> None:
+        """Test initializer."""
+        comb = CombuParallel(_wait)
+        assert comb.func == _wait
+        assert comb.order == []
+        assert comb.n_jobs == -1
+
+        comb = CombuParallel(_wait, order=['v'], n_jobs=2)
+        assert comb.func == _wait
+        assert comb.order == ['v']
+        assert comb.n_jobs == 2
+
+    def test_execute(self) -> None:
+        """Test execute()."""
+        t = 0.1
+        n_combs = 10
+        params = {'v': [t] * n_combs}
+        comb = CombuParallel(_wait, n_jobs=2)
+        start_time = time.monotonic()
+        results = [res for res, _ in comb.execute(params)]
+        total_time = time.monotonic() - start_time
+
+        assert results == [t] * n_combs
+        assert total_time < t * n_combs
