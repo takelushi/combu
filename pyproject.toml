@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "combu"
-version = "1.1.0"
+version = "1.2.0"
 description = "Execute your method with combination parameters."
 authors = ["Takeru Saito <takelushi@gmail.com>"]
 readme = "README.md"
