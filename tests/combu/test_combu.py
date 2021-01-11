@@ -603,3 +603,16 @@ class TestCombu:
             ['after_v1', 3, 6, 9],
         ]
         assert result == expected
+
+    def test_execute_progress(self) -> None:
+        """Test execute().
+
+        Use progress bar
+        """
+
+        def func(v1: int, v2: int) -> int:
+            return v1 * v2
+
+        comb = Combu(func, progress=True)
+        params = {'v1': range(1, 101), 'v2': range(1, 101)}
+        [res for res in comb.execute(params)]  # noqa: C416

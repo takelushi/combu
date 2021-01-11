@@ -36,6 +36,7 @@ def execute(
     func: Callable,
     params: dict,
     order: Iterable = None,
+    progress: bool = False,
 ) -> Iterator[Tuple[Any, Dict[str, Any]]]:
     """Execute the function with parameter combination.
 
@@ -43,6 +44,7 @@ def execute(
         func (Callable): Target function.
         params (TParams): Parameters.
         order (Iterable[TParamsKey], optional): Loop order.
+        progress (bool, optional): Show progress bar or not.
 
     Raises:
         KeyError: Used unknown key on 'order'.
@@ -53,7 +55,14 @@ def execute(
         Iterator[Tuple[Any, Dict[str, Any]]]: Result and parameter.
     """
     params = cast(TParams, params)
+
+    val_ter = create_values(params, order=order)
+    if progress:
+        from tqdm.auto import tqdm
+        total = combu.util.count(params)
+        val_ter = tqdm(val_ter, total=total)
+
     # raise KeyError
-    for comb in create_values(params, order=order):
+    for comb in val_ter:
         # raise TypeError
         yield func(**comb), comb

@@ -67,24 +67,28 @@ class Combu:
     after_a()
     """
 
-    def __init__(self,
-                 func: Callable,
-                 order: List[TParamsKey] = None,
-                 before: Dict[str, Callable] = None,
-                 after: Dict[str, Callable] = None,
-                 before_each: Dict[str, Callable] = None,
-                 after_each: Dict[str, Callable] = None) -> None:
+    def __init__(
+        self,
+        func: Callable,
+        order: Iterable = None,
+        before: Dict[str, Callable] = None,
+        after: Dict[str, Callable] = None,
+        before_each: Dict[str, Callable] = None,
+        after_each: Dict[str, Callable] = None,
+        progress: bool = False,
+    ) -> None:
         """Initialize object.
 
         Args:
             func (Callable): Target function.
-            order (List[TParamsKey], optional): Loop order.
+            order (Iterable[TParamsKey], optional): Loop order.
             before (Dict[str, Callable], optional): Functions before loop.e.
             after (Dict[str, Callable], optional): Functions after loop.
             before_each (Dict[str, Callable], optional):
                 Functions before each loops.
             after_each (Dict[str, Callable], optional):
                 Functions after each loops.
+            progress (bool, optional): Show progress bar or not.
         """
         self.func = func
         self.order = [] if order is None else order
@@ -92,6 +96,7 @@ class Combu:
         self.after = {} if after is None else after
         self.before_each = {} if before_each is None else before_each
         self.after_each = {} if after_each is None else after_each
+        self.progress = progress
 
     def set_before(self, k: str, func: Callable) -> None:
         """Set before function.
@@ -160,7 +165,14 @@ class Combu:
         before_idx = {k: -1 for k in order}
         last_param_idx = {k: len(combs[k]) - 1 for k in order}
 
-        for comb_idx in _create_comb_index(combs):  # type: ignore
+        comb_idx_iter = _create_comb_index(combs)  # type: ignore
+
+        if self.progress:
+            from tqdm.auto import tqdm
+            total = combu.util.count(combs)
+            comb_idx_iter = tqdm(comb_idx_iter, total=total)
+
+        for comb_idx in comb_idx_iter:
             comb = [combs[k][i] for k, i in comb_idx.items()]
             param = _merge_dict(*comb)
             param = {

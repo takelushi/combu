@@ -68,6 +68,8 @@ def func(v1, v2):
 comb = combu.Combu(func)
 # You can set order on initializer.
 # comb = combu.Combu(func, order=['v2', 'v1'])
+# If you want to show progress bar.
+# comb = combu.Combu(func, progress=True)
 
 params = {'v1': ['a', 'b'], 'v2': ['A', 'B']}
 for res, param in comb.execute(params):

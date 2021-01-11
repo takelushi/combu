@@ -9,6 +9,7 @@ repository = "https://github.com/takelushi/combu"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+tqdm = "^4.56.0"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"
