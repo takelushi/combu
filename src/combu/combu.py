@@ -5,6 +5,7 @@ from typing import Any, Callable, cast, Dict, Iterable, Iterator, List, Tuple
 
 import combu
 from combu.definition import TParams, TParamsKey, Unset
+import combu.generator
 import combu.util
 
 
@@ -24,7 +25,7 @@ def _create_comb_index(
     Yields:
         Iterator[Dict[TParamsKey, int]]: Index of parameter.
     """
-    keys = combu.util.get_order(params.keys(), order=order)
+    keys = combu.generator.get_order(params.keys(), order=order)
     idx_list = []
     for k in keys:
         # raise KeyError
@@ -157,7 +158,7 @@ class Combu:
             order = self.order
 
         params_keys = cast(List[TParamsKey], params.keys())
-        order = combu.util.get_order(params_keys, order=order)
+        order = combu.generator.get_order(params_keys, order=order)
 
         combs_list = combu.util.standardize(params, order=order)
         combs = {k: comb for k, comb in zip(order, combs_list)}

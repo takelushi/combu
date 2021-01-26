@@ -1,39 +1,20 @@
 """Combu."""
 
-import itertools
 from typing import Any, Callable, cast, Dict, Iterable, Iterator, Tuple
 
 from combu.combu import Combu, CombuParallel
 from combu.definition import Pack, TParams, Unset
+from combu.generator import create_values
 from combu.parallel import ParallelExecutor
 import combu.util
+
+__version__ = '1.2.0'
 
 Combu = Combu
 CombuParallel = CombuParallel
 Pack = Pack
 Unset = Unset
-
-__version__ = '1.2.0'
-
-
-def create_values(params: dict,
-                  order: Iterable = None) -> Iterator[Dict[str, Any]]:
-    """Create values.
-
-    Args:
-        params (TParams): Parameters.
-        order (Iterable[ParamsKey], optional): Key order.
-
-    Yields:
-        Iterator[Dict[str, Any]]: Parameter.
-    """
-    params = cast(TParams, params)
-    combs_list = combu.util.standardize(params, order=order)
-    for combs in itertools.product(*combs_list):
-        param: Dict[str, Any] = {}
-        for comb in combs:
-            param = {**param, **comb}
-        yield {k: v for k, v in param.items() if not isinstance(v, Unset)}
+create_values = create_values
 
 
 def execute(

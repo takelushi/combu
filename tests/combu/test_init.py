@@ -38,12 +38,6 @@ def test_create_index():
     pass
 
 
-@pytest.mark.skip(reason='Test on execute().')
-def test_create_value():
-    """Test create_value()."""
-    pass
-
-
 def test_execute() -> None:
     """Test execute()."""
 
