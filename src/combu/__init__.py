@@ -13,6 +13,8 @@ CombuParallel = CombuParallel
 Pack = Pack
 Unset = Unset
 
+__version__ = '1.2.0'
+
 
 def create_values(params: dict,
                   order: Iterable = None) -> Iterator[Dict[str, Any]]:

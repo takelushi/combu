@@ -4,10 +4,17 @@ import time
 from typing import Tuple
 
 import pytest
+import toml
 
 import combu
 from combu.combu import Combu
 from combu.definition import Pack, Unset
+
+
+def test_version() -> None:
+    """Test __version__."""
+    pyproject = toml.load(open('pyproject.toml', 'r'))
+    assert combu.__version__ == pyproject['tool']['poetry']['version']
 
 
 def test_import_combu_class():
