@@ -3,7 +3,7 @@
 import toml
 
 import combu
-from combu.combu import Combu, CombuParallel
+from combu._combu import Combu, CombuParallel
 from combu.definition import Pack, Unset
 from combu.execution import execute
 from combu.generator import create_values

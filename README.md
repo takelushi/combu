@@ -152,6 +152,10 @@ comb = combu.CombuParallel(func, n_jobs=-1)
 * Shuffle parameters.
    * `combu.util.shuffle_params`
 
+### Aliases
+
+* combu.exec -> combu.execute
+* combu.values -> combu.create_values
 ## Examples
 
 * Available on `./examples`.

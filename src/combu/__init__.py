@@ -1,21 +1,17 @@
 """Combu."""
 
-from combu.combu import Combu, CombuParallel
-from combu.definition import Pack, Unset
-from combu.execution import execute
-from combu.generator import create_values
-from combu.parallel import ParallelExecutor
+from combu import _combu, definition, execution, generator, parallel
 
 __version__ = '1.2.0'
 
-Combu = Combu
-CombuParallel = CombuParallel
-ParallelExecutor = ParallelExecutor
+Combu = _combu.Combu
+CombuParallel = _combu.CombuParallel
+ParallelExecutor = parallel.ParallelExecutor
+Pack = definition.Pack
+Unset = definition.Unset
 
-Pack = Pack
-Unset = Unset
+execute = execution.execute
+create_values = generator.create_values
 
-create_values = create_values
-execute = execute
 exec = execute  # alias.  # noqa: A001
 values = create_values  # alias.
