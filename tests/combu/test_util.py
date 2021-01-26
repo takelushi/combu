@@ -5,36 +5,6 @@ import random
 import combu.util as util
 
 
-def test_get_order_order() -> None:
-    """Test get_order()."""
-    patterns = [
-        ['a', 'b', 'c'],
-        [1],
-        [],
-    ]
-    for pattern in patterns:
-        assert util.get_order(pattern) == pattern
-
-
-def test_get_order_order_set_order() -> None:
-    """Test get_order().
-
-    'order' is set.
-    """
-    keys = ['a', 'b', 'c']
-    patterns = [
-        (['c'], ['c', 'a', 'b']),
-        (['c', 'b'], ['c', 'b', 'a']),
-        (['a', 'b', 'c'], ['a', 'b', 'c']),
-        (['c', 'b', 'a'], ['c', 'b', 'a']),
-        (['a', 'b', 'c'], ['a', 'b', 'c']),
-        ([], keys),
-        (None, keys),
-    ]
-    for order, expected in patterns:
-        assert util.get_order(keys, order=order) == expected
-
-
 def test_shuffle_params() -> None:
     """Test shuffle_params()."""
     a = list(range(100))

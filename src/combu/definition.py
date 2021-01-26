@@ -3,13 +3,13 @@
 from typing import Any, Dict, Iterable, Tuple, Union
 
 
-class Unset():
+class Unset:
     """Unset paramteter."""
 
-    pass
+    ...
 
 
-class Pack():
+class Pack:
     """Packed combination parameter."""
 
     def __init__(self, *keys: str) -> None:

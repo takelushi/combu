@@ -17,7 +17,7 @@ Execute your method with combination parameters.
 ## Install
 
 ```sh
-pip install conbu
+pip install combu
 ```
 
 ## Usage
@@ -152,6 +152,10 @@ comb = combu.CombuParallel(func, n_jobs=-1)
 * Shuffle parameters.
    * `combu.util.shuffle_params`
 
+### Aliases
+
+* combu.exec -> combu.execute
+* combu.values -> combu.create_values
 ## Examples
 
 * Available on `./examples`.
@@ -167,8 +171,9 @@ poetry install
 # Lint & Test
 mkdir report
 poetry run flake8 --format=html --htmldir=report/flake-report src/ tests/
-poetry run pytest --cov-report term-missing --cov=combu tests/
-poetry run pytest --cov-report html:report/coverage --cov=combu tests/
+poetry run mypy src/ tests/combu/
+poetry run pytest tests/
+poetry run pytest tests/ --cov-report html:report/coverage
 
 # Build and publish
 poetry run python create_badges.py
