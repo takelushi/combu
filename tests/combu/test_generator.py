@@ -1,5 +1,7 @@
 """Test generator."""
 
+from typing import Any, List, Tuple
+
 import pytest
 
 import combu.generator as generator
@@ -7,7 +9,7 @@ import combu.generator as generator
 
 def test_get_order_order() -> None:
     """Test get_order()."""
-    patterns = [
+    patterns: List[List[Any]] = [
         ['a', 'b', 'c'],
         [1],
         [],
@@ -22,7 +24,7 @@ def test_get_order_order_set_order() -> None:
     'order' is set.
     """
     keys = ['a', 'b', 'c']
-    patterns = [
+    patterns: List[Tuple[Any, Any]] = [
         (['c'], ['c', 'a', 'b']),
         (['c', 'b'], ['c', 'b', 'a']),
         (['a', 'b', 'c'], ['a', 'b', 'c']),
