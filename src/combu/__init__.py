@@ -2,7 +2,7 @@
 
 from combu import _combu, definition, execution, generator, parallel
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 Combu = _combu.Combu
 CombuParallel = _combu.CombuParallel
