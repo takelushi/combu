@@ -3,10 +3,11 @@
 import time
 from typing import Tuple
 
+import pytest
+
 import combu
 from combu.combu import Combu
 from combu.definition import Pack, Unset
-import pytest
 
 
 def test_import_combu_class():

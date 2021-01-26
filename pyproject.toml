@@ -34,6 +34,7 @@ flake8-html = "^0.4.1"
 pybadges = "^2.2.1"
 coverage = "^5.3"
 isort = "^5.7.0"
+pytest-html = "^3.1.1"
 
 [tool.poetry.urls]
 issues = "https://github.com/takelushi/combu/issues"
@@ -46,4 +47,11 @@ build-backend = "poetry.masonry.api"
 profile = "google"
 line_length = "79"
 force_single_line = false
-known_third_party = ["combu"]
+known_first_party = ["combu"]
+
+[tool.pytest.ini_options]
+minversion = "6.2"
+addopts = "--html=report/pytest/index.html --cov=src/ --cov-report term-missing"
+testpaths = [
+    "tests"
+]

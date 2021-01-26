@@ -1,5 +1,6 @@
 [flake8]
-ignore = D205,D413,H601
+# H601: (cohesion) class has low.
+ignore = H601
 # exclude = __init__.py
 
 # flake8-quotes
@@ -7,7 +8,7 @@ inline-quotes = single
 multiline-quotes = double
 
 # flake8-import-order
-# application-import-names =
+application-import-names = combu
 import-order-style = google
 
 # flake8-coding
