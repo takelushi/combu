@@ -17,7 +17,7 @@ Execute your method with combination parameters.
 ## Install
 
 ```sh
-pip install conbu
+pip install combu
 ```
 
 ## Usage
