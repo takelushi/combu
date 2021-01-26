@@ -5,7 +5,7 @@
 __pycache__/
 .mypy_cache/
 *.egg-info/
-.coverage
+.coverage*
 
 # Build folder
 dist/

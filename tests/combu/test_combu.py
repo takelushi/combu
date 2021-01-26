@@ -3,7 +3,7 @@
 import time
 from typing import Tuple
 
-from combu.combu import Combu, CombuParallel
+from combu._combu import Combu, CombuParallel
 from combu.definition import Pack, Unset
 
 

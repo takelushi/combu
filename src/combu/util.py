@@ -5,23 +5,8 @@ from typing import Any, cast, Dict, Iterable, List, Tuple
 
 import combu
 from combu.definition import Pack, TParams, TParamsKey, TParamsValue
+import combu.generator
 import combu.util
-
-
-def get_order(keys: Iterable[TParamsKey],
-              order: Iterable[TParamsKey] = None) -> List[TParamsKey]:
-    """Get order.
-
-    Args:
-        keys (Iterable[TParamsKey]): Keys.
-        order (Iterable[TParamsKey], optional): Key order.
-
-    Returns:
-        List[TParamsKey]: Keys order.
-    """
-    order = [] if order is None else [k for k in order]  # noqa: C416
-    order += [k for k in keys if k not in order]
-    return order
 
 
 def _unpack_tuple(keys: Tuple[Any, ...],
@@ -42,7 +27,7 @@ def _unpack_pack(pack: Pack, params_iter: Iterable[TParams]):
         assert isinstance(k, str)
     for params in params_iter:
         keys = cast(Iterable[str], pack.keys)
-        vals = combu.create_values(params, order=keys)
+        vals = combu.generator.create_values(params, order=keys)
         result += [v for v in vals]  # noqa: C416
 
     return result
@@ -71,7 +56,7 @@ def standardize(
     Returns:
         List[List[Dict[str, Any]]]: Standardized parameters.
     """
-    keys = combu.util.get_order(params.keys(), order=order)
+    keys = combu.generator.get_order(params.keys(), order=order)
 
     results = []
 
